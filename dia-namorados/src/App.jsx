@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, X, Calendar, ChevronDown } from 'lucide-react';
+// Adicionei o ícone 'Lock' (Cadeado) aos imports!
+import { Heart, X, Calendar, ChevronDown, Lock } from 'lucide-react';
 
 // === IMPORTAÇÃO DAS SUAS FOTOS ===
 import fotoHero from './assets/hero.png';
@@ -18,6 +19,49 @@ const styles = {
   fontPlayfair: { fontFamily: "'Playfair Display', serif" },
   fontInter: { fontFamily: "'Inter', sans-serif" }
 };
+
+// --- NOVO COMPONENTE: CARTÃO QUE VIRA 3D ---
+const FlipCard = ({ motivo, index }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <div 
+      className="relative w-full h-[150px] cursor-pointer group" 
+      style={{ perspective: '1000px' }}
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <motion.div
+        className="w-full h-full relative"
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {/* FRENTE DO CARTÃO (O Cadeado) */}
+        <div 
+          className="absolute inset-0 bg-[#1a237e]/20 border border-[#7986cb]/20 rounded-2xl flex flex-col items-center justify-center shadow-md backdrop-blur-sm group-hover:bg-[#1a237e]/30 transition-colors"
+          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+        >
+          <Lock className="text-[#7986cb] mb-2" size={32} />
+          <span className="text-[10px] text-[#7986cb] tracking-widest uppercase font-medium mt-2">
+            Motivo {index}
+          </span>
+        </div>
+
+        {/* VERSO DO CARTÃO (A Mensagem) */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-[#1a237e]/40 to-[#283593]/20 border border-[#7986cb]/40 rounded-2xl flex items-center justify-center p-4 text-center shadow-[0_0_15px_rgba(121,134,203,0.3)]"
+          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+        >
+          <p className="text-sm md:text-base italic text-slate-100" style={styles.fontPlayfair}>
+            "{motivo}"
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 
 export default function ParaCamyla() {
   const [showSplash, setShowSplash] = useState(true);
@@ -57,7 +101,6 @@ export default function ParaCamyla() {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // 1. Criar estrelas de fundo normais
     const stars = Array.from({ length: 120 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -66,21 +109,14 @@ export default function ParaCamyla() {
       speed: 0.01 + Math.random() * 0.02
     }));
 
-    // 2. Criar sistema de estrelas cadentes
     const shootingStars = Array.from({ length: 2 }, () => ({
-      x: 0,
-      y: 0,
-      len: 0,
-      speedX: 0,
-      speedY: 0,
-      active: false,
-      wait: Math.random() * 200 // Tempo de espera para nascer a primeira vez
+      x: 0, y: 0, len: 0, speedX: 0, speedY: 0, active: false,
+      wait: Math.random() * 200
     }));
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // --- Desenhar Estrelas Normais ---
       stars.forEach(star => {
         star.alpha += star.speed;
         if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
@@ -90,43 +126,38 @@ export default function ParaCamyla() {
         ctx.fill();
       });
 
-      // --- Desenhar Estrelas Cadentes ---
       shootingStars.forEach(ss => {
         if (!ss.active) {
           ss.wait--;
           if (ss.wait <= 0) {
              ss.active = true;
-             // Começa do lado direito ou superior para cruzar o ecrã na diagonal
              ss.x = Math.random() * canvas.width * 1.5; 
              ss.y = Math.random() * canvas.height * -0.5;
-             ss.len = Math.random() * 80 + 40; // Comprimento da cauda
-             ss.speedX = -(Math.random() * 6 + 4); // Velocidade Horizontal (da direita para a esquerda)
-             ss.speedY = Math.random() * 6 + 4;    // Velocidade Vertical (de cima para baixo)
+             ss.len = Math.random() * 80 + 40; 
+             ss.speedX = -(Math.random() * 6 + 4); 
+             ss.speedY = Math.random() * 6 + 4;    
           }
         } else {
-          // Atualiza a posição
           ss.x += ss.speedX;
           ss.y += ss.speedY;
 
-          // Cria um gradiente para o efeito de rasto (cauda desvanece)
           const gradient = ctx.createLinearGradient(
             ss.x, ss.y, 
             ss.x - ss.speedX * (ss.len * 0.1), ss.y - ss.speedY * (ss.len * 0.1)
           );
-          gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Cabeça brilhante
-          gradient.addColorStop(1, "rgba(255, 255, 255, 0)"); // Cauda invisível
+          gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); 
+          gradient.addColorStop(1, "rgba(255, 255, 255, 0)"); 
 
           ctx.beginPath();
           ctx.strokeStyle = gradient;
           ctx.lineWidth = 1.5;
-          ctx.moveTo(ss.x, ss.y); // Posição atual da cabeça
-          ctx.lineTo(ss.x - ss.speedX * (ss.len * 0.1), ss.y - ss.speedY * (ss.len * 0.1)); // Fim da cauda
+          ctx.moveTo(ss.x, ss.y); 
+          ctx.lineTo(ss.x - ss.speedX * (ss.len * 0.1), ss.y - ss.speedY * (ss.len * 0.1)); 
           ctx.stroke();
 
-          // Se a estrela cadente sair do ecrã, reinicia com uma espera aleatória
           if (ss.x < 0 || ss.y > canvas.height) {
             ss.active = false;
-            ss.wait = Math.random() * 300 + 100; // Tempo aleatório até à próxima estrela
+            ss.wait = Math.random() * 300 + 100; 
           }
         }
       });
@@ -263,7 +294,6 @@ export default function ParaCamyla() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#03061a]/40 to-transparent" />
             </motion.div>
 
-            {/* BOTÃO DE SCROLL */}
             <div 
               onClick={fazerScrollParaConteudo}
               className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-60 animate-bounce cursor-pointer hover:opacity-100 transition-opacity"
@@ -275,10 +305,10 @@ export default function ParaCamyla() {
 
           <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#7986cb] to-transparent mx-auto my-12" />
 
-          {/* Âncoragem para o scroll suave */}
+          {/* Âncoragem para o scroll */}
           <div id="nossa-historia"></div>
 
-          {/* Seção de Citação / Poema - 100% CORRIGIDA */}
+          {/* Seção de Citação / Poema */}
           <section className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center bg-gradient-to-b from-transparent via-[#1a237e]/10 to-transparent">
             <span className="text-[10px] tracking-[0.3em] uppercase text-[#7986cb] mb-6">Nossos Sentimentos</span>
             <motion.div 
@@ -286,7 +316,6 @@ export default function ParaCamyla() {
               className="flex flex-col items-center"
             >
               <div className="relative max-w-2xl px-8 md:px-12 py-6">
-                {/* Aspas de Abertura (Garantido por inline-style) */}
                 <span 
                   className="absolute pointer-events-none select-none" 
                   style={{ ...styles.fontPlayfair, top: '-20px', left: '-10px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
@@ -298,7 +327,6 @@ export default function ParaCamyla() {
                   No vasto céu do meu mundo, você é a estrela mais brilhante, aquela que guia os meus passos e dá sentido ao meu caminhar.
                 </p>
                 
-                {/* Aspas de Fechamento (Garantido por inline-style) */}
                 <span 
                   className="absolute pointer-events-none select-none" 
                   style={{ ...styles.fontPlayfair, bottom: '-50px', right: '75px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
@@ -307,7 +335,6 @@ export default function ParaCamyla() {
                 </span>
               </div>
               
-              {/* Assinatura */}
               <p className="text-xs text-[#ffd54f] tracking-[0.2em] uppercase mt-8 font-semibold relative z-10">— O nosso amor</p>
             </motion.div>
           </section>
@@ -319,7 +346,6 @@ export default function ParaCamyla() {
               <p className="text-xs md:text-sm text-[#7986cb] tracking-wider">Momentos guardados para sempre no lado esquerdo do peito.</p>
             </div>
 
-            {/* As suas 7 fotos */}
             <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
               {[
                 { id: 1, tall: true, url: foto1, label: "Nosso início" },
@@ -382,6 +408,26 @@ export default function ParaCamyla() {
               </p>
               <p className="text-xs text-[#ffd54f] tracking-wider mt-6 font-medium">— Do teu eterno namorado</p>
             </motion.div>
+          </section>
+
+          {/* === NOVA SEÇÃO: MOTIVOS PELOS QUAIS TE AMO (CARTÕES FLIP) === */}
+          <section className="py-20 px-6 max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-2" style={styles.fontPlayfair}>Por que te amo?</h2>
+              <p className="text-xs text-[#7986cb] tracking-widest uppercase">Clica nos cadeados para descobrir</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
+              {/* Para alterar as frases, basta modificar o texto dentro das aspas abaixo! */}
+              {[
+                "Amo a forma como o teu sorriso ilumina os meus dias.",
+                "Amo como me fazes sentir o homem mais sortudo do universo.",
+                "Amo a nossa cumplicidade e a paz que sinto no teu abraço.",
+                "Amo todos os teus detalhes, porque formam a pessoa perfeita para mim."
+              ].map((frase, index) => (
+                <FlipCard key={index} motivo={frase} index={index + 1} />
+              ))}
+            </div>
           </section>
 
           {/* Seção Final */}
