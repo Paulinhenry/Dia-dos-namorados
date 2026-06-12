@@ -42,7 +42,7 @@ export default function ParaCamyla() {
     }
   };
 
-  // --- Efeito do Canvas de Estrelas ---
+  // --- Efeito do Canvas: Estrelas Normais + Estrelas Cadentes ---
   useEffect(() => {
     if (showSplash) return;
     const canvas = canvasRef.current;
@@ -57,6 +57,7 @@ export default function ParaCamyla() {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
+    // 1. Criar estrelas de fundo normais
     const stars = Array.from({ length: 120 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -65,8 +66,21 @@ export default function ParaCamyla() {
       speed: 0.01 + Math.random() * 0.02
     }));
 
+    // 2. Criar sistema de estrelas cadentes
+    const shootingStars = Array.from({ length: 2 }, () => ({
+      x: 0,
+      y: 0,
+      len: 0,
+      speedX: 0,
+      speedY: 0,
+      active: false,
+      wait: Math.random() * 200 // Tempo de espera para nascer a primeira vez
+    }));
+
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // --- Desenhar Estrelas Normais ---
       stars.forEach(star => {
         star.alpha += star.speed;
         if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
@@ -75,6 +89,48 @@ export default function ParaCamyla() {
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      // --- Desenhar Estrelas Cadentes ---
+      shootingStars.forEach(ss => {
+        if (!ss.active) {
+          ss.wait--;
+          if (ss.wait <= 0) {
+             ss.active = true;
+             // Começa do lado direito ou superior para cruzar o ecrã na diagonal
+             ss.x = Math.random() * canvas.width * 1.5; 
+             ss.y = Math.random() * canvas.height * -0.5;
+             ss.len = Math.random() * 80 + 40; // Comprimento da cauda
+             ss.speedX = -(Math.random() * 6 + 4); // Velocidade Horizontal (da direita para a esquerda)
+             ss.speedY = Math.random() * 6 + 4;    // Velocidade Vertical (de cima para baixo)
+          }
+        } else {
+          // Atualiza a posição
+          ss.x += ss.speedX;
+          ss.y += ss.speedY;
+
+          // Cria um gradiente para o efeito de rasto (cauda desvanece)
+          const gradient = ctx.createLinearGradient(
+            ss.x, ss.y, 
+            ss.x - ss.speedX * (ss.len * 0.1), ss.y - ss.speedY * (ss.len * 0.1)
+          );
+          gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Cabeça brilhante
+          gradient.addColorStop(1, "rgba(255, 255, 255, 0)"); // Cauda invisível
+
+          ctx.beginPath();
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(ss.x, ss.y); // Posição atual da cabeça
+          ctx.lineTo(ss.x - ss.speedX * (ss.len * 0.1), ss.y - ss.speedY * (ss.len * 0.1)); // Fim da cauda
+          ctx.stroke();
+
+          // Se a estrela cadente sair do ecrã, reinicia com uma espera aleatória
+          if (ss.x < 0 || ss.y > canvas.height) {
+            ss.active = false;
+            ss.wait = Math.random() * 300 + 100; // Tempo aleatório até à próxima estrela
+          }
+        }
+      });
+
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
