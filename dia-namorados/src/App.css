@@ -593,6 +593,7 @@
   .scroll-hint {
     position: absolute;
     bottom: 2rem;
+    top: 100px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
