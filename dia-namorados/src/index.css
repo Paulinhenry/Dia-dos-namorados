@@ -1,5 +1,5 @@
 /* ==========================================================================
-   NOVO INDEX.CSS - SOLUÇÃO PURA SEM NECESSIDADE DE INSTALAR TAILWIND
+   NOVO INDEX.CSS - SOLUÇÃO PURA (CORRIGIDO PARA VITE BUILD)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -37,11 +37,14 @@ body {
 .left-0 { left: 0; }
 .right-0 { right: 0; }
 .bottom-8 { bottom: 2rem; }
-.left-1/2 { left: 50%; }
+.left-1\/2 { left: 50%; } /* Barra corrigida */
 .top-6 { top: 1.5rem; }
 .right-6 { right: 1.5rem; }
 .-top-16 { top: -4rem; }
 .-left-4 { left: -1rem; }
+.-left-8 { left: -2rem; }
+.-bottom-16 { bottom: -4rem; }
+.-right-8 { right: -2rem; }
 .z-0 { z-index: 0; }
 .z-10 { z-index: 10; }
 .z-50 { z-index: 50; }
@@ -71,6 +74,7 @@ body {
 .w-full { width: 100%; }
 .h-full { height: 100%; }
 .w-16 { width: 4rem; }
+.h-\[1px\] { height: 1px; }
 .h-\[2px\] { height: 2px; }
 .w-\[280px\] { width: 280px; }
 .h-\[380px\] { height: 380px; }
@@ -94,6 +98,7 @@ body {
 .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
 .px-8 { padding-left: 2rem; padding-right: 2rem; }
 .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
 .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
 .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
 .mb-2 { margin-bottom: 0.5rem; }
@@ -103,6 +108,9 @@ body {
 .mb-12 { margin-bottom: 3rem; }
 .mt-1 { margin-top: 0.25rem; }
 .mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mt-10 { margin-top: 2.5rem; }
+.mt-12 { margin-top: 3rem; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 .my-12 { margin-top: 3rem; margin-bottom: 3rem; }
 
@@ -112,26 +120,29 @@ body {
 .text-xs { font-size: 0.75rem; }
 .text-sm { font-size: 0.875rem; }
 .text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
 .text-xl { font-size: 1.25rem; }
 .text-2xl { font-size: 1.5rem; }
 .text-3xl { font-size: 1.875rem; }
 .text-4xl { font-size: 2.25rem; }
 .text-5xl { font-size: 3rem; }
+.text-8xl { font-size: 6rem; }
 .text-9xl { font-size: 8rem; }
 .font-medium { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
 .italic { font-style: italic; }
 .uppercase { text-transform: uppercase; }
+.leading-none { line-height: 1; }
 .leading-tight { line-height: 1.25; }
 .leading-relaxed { line-height: 1.625; }
 .tracking-tight { letter-spacing: -0.025em; }
 .tracking-wide { letter-spacing: 0.025em; }
 .tracking-wider { letter-spacing: 0.05em; }
 .tracking-widest { letter-spacing: 0.1em; }
-.tracking-\[0.2em\] { letter-spacing: 0.2em; }
-.tracking-\[0.25em\] { letter-spacing: 0.25em; }
-.tracking-\[0.3em\] { letter-spacing: 0.3em; }
+.tracking-\[0\.2em\] { letter-spacing: 0.2em; }
+.tracking-\[0\.25em\] { letter-spacing: 0.25em; }
+.tracking-\[0\.3em\] { letter-spacing: 0.3em; }
 
 /* Cores, Opacidade e Efeitos Visuais */
 .text-\[\#e8eaf6\] { color: #e8eaf6; }
@@ -146,6 +157,7 @@ body {
 .text-white\/90 { color: rgba(255, 255, 255, 0.9); }
 .bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
 .text-\[\#7986cb\]\/80 { color: rgba(121, 134, 203, 0.8); }
+.text-\[\#7986cb\]\/10 { color: rgba(121, 134, 203, 0.1); }
 .bg-black\/95 { background-color: rgba(0, 0, 0, 0.95); }
 .bg-\[\#1a237e\]\/20 { background-color: rgba(26, 35, 126, 0.2); }
 .opacity-0 { opacity: 0; }
@@ -155,6 +167,7 @@ body {
 .object-top { object-position: top; }
 .object-contain { object-fit: contain; }
 .cursor-zoom-out { cursor: zoom-out; }
+.cursor-pointer { cursor: pointer; }
 .backdrop-blur-md { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .backdrop-blur-lg { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
@@ -183,6 +196,7 @@ body {
 .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
 .shadow-\[0_0_30px_rgba\(121\,134\,203\,0\.4\)\] { box-shadow: 0 0 30px rgba(121, 134, 203, 0.4); }
 .shadow-\[0_0_50px_rgba\(121\,134\,203\,0\.3\)\] { box-shadow: 0 0 50px rgba(121, 134, 203, 0.3); }
+.shadow-\[0_0_50px_rgba\(121\,134\,203\,0\.7\)\] { box-shadow: 0 0 50px rgba(121, 134, 203, 0.7); }
 .shadow-\[0_0_60px_rgba\(121\,134\,203\,0\.3\)\,_0_30px_60px_rgba\(0\,0\,0\,0\.6\)\] { box-shadow: 0 0 60px rgba(121, 134, 203, 0.3), 0 30px 60px rgba(0,0,0,0.6); }
 
 .drop-shadow-\[0_0_25px_rgba\(121\,134\,203\,0\.8\)\] { filter: drop-shadow(0 0 25px rgba(121,134,203,0.8)); }
@@ -193,14 +207,17 @@ body {
 .transition-all { transition-property: all; }
 .transition-colors { transition-property: color, background-color, border-color; }
 .transition-transform { transition-property: transform; }
+.transition-opacity { transition-property: opacity; }
 .duration-200 { transition-duration: 200ms; }
 .duration-300 { transition-duration: 300ms; }
 .duration-500 { transition-duration: 500ms; }
-.-translate-x-1/2 { transform: translateX(-50%); }
+.-translate-x-1\/2 { transform: translateX(-50%); } /* Barra corrigida */
 
 .group:hover .group-hover\:opacity-100 { opacity: 1; }
 .group:hover .group-hover\:scale-105 { transform: scale(1.05); }
 .hover\:bg-white\/20:hover { background-color: rgba(255, 255, 255, 0.2); }
+.hover\:opacity-100:hover { opacity: 1; }
+.hover\:shadow-\[0_0_50px_rgba\(121\,134\,203\,0\.7\)\]:hover { box-shadow: 0 0 50px rgba(121, 134, 203, 0.7); }
 
 /* Animações Customizadas Lindas */
 @keyframes ping {
@@ -232,6 +249,11 @@ body {
   .md\:text-5xl { font-size: 3rem; }
   .md\:text-6xl { font-size: 3.75rem; }
   .md\:text-8xl { font-size: 6rem; }
+  .md\:text-9xl { font-size: 8rem; }
   .md\:w-\[340px\] { width: 340px; }
   .md\:h-\[440px\] { height: 440px; }
+  .md\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+  .md\:px-12 { padding-left: 3rem; padding-right: 3rem; }
+  .md\:-left-8 { left: -2rem; }
+  .md\:-right-8 { right: -2rem; }
 }

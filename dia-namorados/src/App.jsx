@@ -337,7 +337,7 @@ export default function ParaCamyla() {
                 </motion.span>
               ))}
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4" style={styles.fontPlayfair}>Para todo o sempre.</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4" style={styles.fontPlayfair}>Para todo o sempre C&PH.</h2>
             <p className="text-sm text-[#7986cb]/80 max-w-xs mx-auto leading-relaxed">
               Obrigado por seres a minha melhor escolha todos os dias.
             </p>
