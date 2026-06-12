@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Adicionei o ícone 'Lock' (Cadeado) aos imports!
 import { Heart, X, Calendar, ChevronDown, Lock } from 'lucide-react';
 
 // === IMPORTAÇÃO DAS SUAS FOTOS ===
@@ -20,7 +19,7 @@ const styles = {
   fontInter: { fontFamily: "'Inter', sans-serif" }
 };
 
-// --- NOVO COMPONENTE: CARTÃO QUE VIRA 3D ---
+// --- COMPONENTE: CARTÃO QUE VIRA 3D ---
 const FlipCard = ({ motivo, index }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -37,7 +36,6 @@ const FlipCard = ({ motivo, index }) => {
         transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* FRENTE DO CARTÃO (O Cadeado) */}
         <div 
           className="absolute inset-0 bg-[#1a237e]/20 border border-[#7986cb]/20 rounded-2xl flex flex-col items-center justify-center shadow-md backdrop-blur-sm group-hover:bg-[#1a237e]/30 transition-colors"
           style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
@@ -48,7 +46,6 @@ const FlipCard = ({ motivo, index }) => {
           </span>
         </div>
 
-        {/* VERSO DO CARTÃO (A Mensagem) */}
         <div 
           className="absolute inset-0 bg-gradient-to-br from-[#1a237e]/40 to-[#283593]/20 border border-[#7986cb]/40 rounded-2xl flex items-center justify-center p-4 text-center shadow-[0_0_15px_rgba(121,134,203,0.3)]"
           style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
@@ -68,6 +65,9 @@ export default function ParaCamyla() {
   const [lightboxImg, setLightboxImg] = useState(null);
   const [timeLeft, setCountdown] = useState({ anos: 0, meses: 0, dias: 0, horas: 0 });
   const canvasRef = useRef(null);
+  
+  // --- ESTADO: CHUVA DE CORAÇÕES AO CLICAR ---
+  const [clickHearts, setClickHearts] = useState([]);
 
   // --- TRANSIÇÃO AUTOMÁTICA DA TELA INICIAL ---
   useEffect(() => {
@@ -78,8 +78,26 @@ export default function ParaCamyla() {
     return () => clearTimeout(splashTimer);
   }, []);
 
+  // --- Função para a Chuva de Corações (Clique Mágico) ---
+  const handleScreenClick = (e) => {
+    const newHeart = {
+      id: Date.now() + Math.random(), // Gera um ID único rápido
+      x: e.clientX,
+      y: e.clientY,
+      color: Math.random() > 0.5 ? '#ff4081' : '#ffd54f' // 50% chance de ser Rosa ou Dourado
+    };
+
+    setClickHearts((prev) => [...prev, newHeart]);
+
+    // Limpa o coração da memória do site após 1.5 segundos (quando a animação acaba)
+    setTimeout(() => {
+      setClickHearts((prev) => prev.filter((h) => h.id !== newHeart.id));
+    }, 1500);
+  };
+
   // --- Função para o Clique do Scroll ---
-  const fazerScrollParaConteudo = () => {
+  const fazerScrollParaConteudo = (e) => {
+    e.stopPropagation(); // Evita criar um coração exatamente em cima da seta ao clicar
     const secaoHistoria = document.getElementById('nossa-historia');
     if (secaoHistoria) {
       secaoHistoria.scrollIntoView({ behavior: 'smooth' });
@@ -209,7 +227,11 @@ export default function ParaCamyla() {
   }, [lightboxImg]);
 
   return (
-    <div className="min-h-screen text-[#e8eaf6] bg-[#03061a] relative overflow-x-hidden select-none" style={styles.fontInter}>
+    <div 
+      className="min-h-screen text-[#e8eaf6] bg-[#03061a] relative overflow-x-hidden select-none" 
+      style={styles.fontInter}
+      onClick={handleScreenClick} // A MAGIA DOS CORAÇÕES COMEÇA AQUI
+    >
       
       {/* Tela de Splash Automática */}
       <AnimatePresence>
@@ -359,7 +381,7 @@ export default function ParaCamyla() {
                 <motion.div
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   key={photo.id}
-                  onClick={() => setLightboxImg(photo.url)}
+                  onClick={(e) => { e.stopPropagation(); setLightboxImg(photo.url); }} // Impede que crie coração ao abrir foto
                   className={`rounded-2xl overflow-hidden relative cursor-pointer group shadow-lg border border-[#7986cb]/10 ${photo.tall ? 'row-span-2 h-[320px]' : 'h-[150px]'}`}
                 >
                   <img src={photo.url} alt={photo.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -410,7 +432,7 @@ export default function ParaCamyla() {
             </motion.div>
           </section>
 
-          {/* === NOVA SEÇÃO: MOTIVOS PELOS QUAIS TE AMO (CARTÕES FLIP) === */}
+          {/* SECÇÃO DE CARTÕES (MOTIVOS PELOS QUAIS TE AMO) */}
           <section className="py-20 px-6 max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-2" style={styles.fontPlayfair}>Por que te amo?</h2>
@@ -418,7 +440,6 @@ export default function ParaCamyla() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
-              {/* Para alterar as frases, basta modificar o texto dentro das aspas abaixo! */}
               {[
                 "Amo a forma como o teu sorriso ilumina os meus dias.",
                 "Amo como me fazes sentir o homem mais sortudo do universo.",
@@ -452,11 +473,12 @@ export default function ParaCamyla() {
       <AnimatePresence>
         {lightboxImg && (
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightboxImg(null)}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+            onClick={(e) => { e.stopPropagation(); setLightboxImg(null); }} // Fecha a imagem sem criar corações no fundo
             className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 cursor-zoom-out"
           >
             <button 
-              onClick={() => setLightboxImg(null)}
+              onClick={(e) => { e.stopPropagation(); setLightboxImg(null); }}
               className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-colors duration-200 cursor-pointer"
             >
               <X size={20} />
@@ -464,10 +486,32 @@ export default function ParaCamyla() {
             <motion.img 
               initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
               src={lightboxImg} alt="Visualização ampliada" 
+              onClick={(e) => e.stopPropagation()} // Impede que o clique na foto feche a imagem ou gere corações
               className="max-w-full max-h-[85vh] rounded-xl object-contain shadow-[0_0_50px_rgba(121,134,203,0.3)]"
             />
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* === RENDERIZAÇÃO DA CHUVA DE CORAÇÕES === */}
+      <AnimatePresence>
+        {clickHearts.map((heart) => (
+          <motion.div
+            key={heart.id}
+            initial={{ opacity: 1, y: 0, scale: 0.5 }}
+            animate={{ opacity: 0, y: -100, scale: 1.5 }} // Flutua 100px para cima e fica maior
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="fixed pointer-events-none"
+            style={{ 
+              left: heart.x - 12, // Centraliza perfeitamente no ponteiro (metade de 24px)
+              top: heart.y - 12, 
+              zIndex: 9999 
+            }}
+          >
+            <Heart size={24} style={{ color: heart.color, fill: heart.color }} />
+          </motion.div>
+        ))}
       </AnimatePresence>
 
     </div>
