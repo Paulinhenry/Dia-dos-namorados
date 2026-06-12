@@ -411,7 +411,7 @@ export default function ParaCamyla() {
                 
                 <span 
                   className="absolute pointer-events-none select-none" 
-                  style={{ ...styles.fontPlayfair, bottom: '-50px', right: '10px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
+                  style={{ ...styles.fontPlayfair, bottom: '-50px', right: '15px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
                 >
                   ”
                 </span>
