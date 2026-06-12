@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, X, Calendar, ChevronDown, Lock } from 'lucide-react';
+// Alterado: Importado o ícone 'Music' para um aspeto mais elegante
+import { Heart, X, Calendar, ChevronDown, Lock, Music } from 'lucide-react';
 
-// === IMPORTAÇÃO DAS SUAS FOTOS ===
-import fotoHero from './assets/hero.png';
+// === IMPORTAÇÃO DAS SUAS FOTOS E MÚSICA ===
+import fotoHero from './assets/foto8.jpeg';
 import foto1 from './assets/foto1.jpeg';
 import foto2 from './assets/foto2.jpeg';
 import foto3 from './assets/foto3.jpeg';
@@ -11,7 +12,7 @@ import foto4 from './assets/foto4.jpeg';
 import foto5 from './assets/foto5.jpeg';
 import foto6 from './assets/foto6.jpeg';
 import foto7 from './assets/foto7.jpeg';
-import foto8 from './assets/foto8.jpeg';
+import musicaBackground from './assets/musica.mp3';
 
 // --- CONFIGURAÇÃO DE ESTILOS ---
 const styles = {
@@ -27,7 +28,7 @@ const FlipCard = ({ motivo, index }) => {
     <div 
       className="relative w-full h-[150px] cursor-pointer group" 
       style={{ perspective: '1000px' }}
-      onClick={() => setIsFlipped(!isFlipped)}
+      onClick={(e) => { e.stopPropagation(); setIsFlipped(!isFlipped); }}
     >
       <motion.div
         className="w-full h-full relative"
@@ -66,6 +67,11 @@ export default function ParaCamyla() {
   const [timeLeft, setCountdown] = useState({ anos: 0, meses: 0, dias: 0, horas: 0 });
   const canvasRef = useRef(null);
   
+  // --- ESTADOS DO ÁUDIO E INTERAÇÃO ---
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
   // --- ESTADO: CHUVA DE CORAÇÕES AO CLICAR ---
   const [clickHearts, setClickHearts] = useState([]);
 
@@ -78,18 +84,45 @@ export default function ParaCamyla() {
     return () => clearTimeout(splashTimer);
   }, []);
 
-  // --- Função para a Chuva de Corações (Clique Mágico) ---
+  // --- Função para o Botão Flutuante Alternar Música ---
+  const togglePlay = (e) => {
+    e.stopPropagation(); 
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        setHasInteracted(true);
+      }).catch(err => console.log("Áudio bloqueado pelo navegador:", err));
+    }
+  };
+
+  // --- Função para a Chuva de Corações + Ativação do Áudio ---
   const handleScreenClick = (e) => {
+    const azulShades = ['#4fc3f7', '#64b5f6', '#29b6f6', '#00b0ff', '#9fa8da', '#7986cb', '#b3e5fc', '#e8eaf6'];
+    const randomColor = azulShades[Math.floor(Math.random() * azulShades.length)];
+
     const newHeart = {
-      id: Date.now() + Math.random(), // Gera um ID único rápido
+      id: Date.now() + Math.random(),
       x: e.clientX,
       y: e.clientY,
-      color: Math.random() > 0.5 ? '#ff4081' : '#ffd54f' // 50% chance de ser Rosa ou Dourado
+      color: randomColor
     };
 
     setClickHearts((prev) => [...prev, newHeart]);
 
-    // Limpa o coração da memória do site após 1.5 segundos (quando a animação acaba)
+    if (!hasInteracted && !isPlaying && audioRef.current) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        setHasInteracted(true);
+      }).catch(() => {
+        setHasInteracted(true);
+      });
+    }
+
     setTimeout(() => {
       setClickHearts((prev) => prev.filter((h) => h.id !== newHeart.id));
     }, 1500);
@@ -97,7 +130,7 @@ export default function ParaCamyla() {
 
   // --- Função para o Clique do Scroll ---
   const fazerScrollParaConteudo = (e) => {
-    e.stopPropagation(); // Evita criar um coração exatamente em cima da seta ao clicar
+    e.stopPropagation(); 
     const secaoHistoria = document.getElementById('nossa-historia');
     if (secaoHistoria) {
       secaoHistoria.scrollIntoView({ behavior: 'smooth' });
@@ -230,8 +263,35 @@ export default function ParaCamyla() {
     <div 
       className="min-h-screen text-[#e8eaf6] bg-[#03061a] relative overflow-x-hidden select-none" 
       style={styles.fontInter}
-      onClick={handleScreenClick} // A MAGIA DOS CORAÇÕES COMEÇA AQUI
+      onClick={handleScreenClick}
     >
+      {/* Elemento de Áudio Oculto */}
+      <audio ref={audioRef} src={musicaBackground} loop />
+
+      {/* NOVO BOTÃO FLUTUANTE DE MÚSICA (Elegante e Premium) */}
+      {!showSplash && (
+        <motion.button
+          onClick={togglePlay}
+          className="fixed top-6 right-6 z-50 bg-gradient-to-r from-[#1a237e]/40 to-[#03061a]/60 border border-[#7986cb]/30 hover:border-[#4fc3f7]/50 px-4 py-2 md:px-5 md:py-2.5 rounded-full shadow-[0_0_20px_rgba(121,134,203,0.3)] cursor-pointer backdrop-blur-md transition-all flex items-center gap-2 md:gap-3 group"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title={isPlaying ? "Pausar música" : "Tocar música"}
+        >
+          {isPlaying ? (
+            <motion.div 
+              animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }} 
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            >
+              <Music size={18} className="text-[#4fc3f7] drop-shadow-[0_0_8px_rgba(79,195,247,0.8)]" />
+            </motion.div>
+          ) : (
+            <Music size={18} className="text-[#7986cb] group-hover:text-[#4fc3f7] transition-colors" />
+          )}
+          <span className="text-[9px] md:text-xs font-semibold tracking-[0.2em] uppercase text-[#e8eaf6] group-hover:text-white transition-colors mt-[2px]">
+            {isPlaying ? "A Tocar" : "Nossa Música"}
+          </span>
+        </motion.button>
+      )}
       
       {/* Tela de Splash Automática */}
       <AnimatePresence>
@@ -309,7 +369,7 @@ export default function ParaCamyla() {
               className="w-[280px] md:w-[340px] h-[380px] md:h-[440px] rounded-2xl overflow-hidden relative shadow-[0_0_60px_rgba(121,134,203,0.3),_0_30px_60px_rgba(0,0,0,0.6)] border border-[#7986cb]/20"
             >
               <img 
-                src={foto8} 
+                src={fotoHero} 
                 alt="Nós os dois" 
                 className="w-full h-full object-cover object-top"
               />
@@ -381,7 +441,7 @@ export default function ParaCamyla() {
                 <motion.div
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   key={photo.id}
-                  onClick={(e) => { e.stopPropagation(); setLightboxImg(photo.url); }} // Impede que crie coração ao abrir foto
+                  onClick={(e) => { e.stopPropagation(); setLightboxImg(photo.url); }} 
                   className={`rounded-2xl overflow-hidden relative cursor-pointer group shadow-lg border border-[#7986cb]/10 ${photo.tall ? 'row-span-2 h-[320px]' : 'h-[150px]'}`}
                 >
                   <img src={photo.url} alt={photo.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -474,7 +534,7 @@ export default function ParaCamyla() {
         {lightboxImg && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-            onClick={(e) => { e.stopPropagation(); setLightboxImg(null); }} // Fecha a imagem sem criar corações no fundo
+            onClick={(e) => { e.stopPropagation(); setLightboxImg(null); }} 
             className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 cursor-zoom-out"
           >
             <button 
@@ -486,25 +546,25 @@ export default function ParaCamyla() {
             <motion.img 
               initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
               src={lightboxImg} alt="Visualização ampliada" 
-              onClick={(e) => e.stopPropagation()} // Impede que o clique na foto feche a imagem ou gere corações
+              onClick={(e) => e.stopPropagation()} 
               className="max-w-full max-h-[85vh] rounded-xl object-contain shadow-[0_0_50px_rgba(121,134,203,0.3)]"
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* === RENDERIZAÇÃO DA CHUVA DE CORAÇÕES === */}
+      {/* === RENDERIZAÇÃO DA CHUVA DE CORAÇÕES AZUIS === */}
       <AnimatePresence>
         {clickHearts.map((heart) => (
           <motion.div
             key={heart.id}
             initial={{ opacity: 1, y: 0, scale: 0.5 }}
-            animate={{ opacity: 0, y: -100, scale: 1.5 }} // Flutua 100px para cima e fica maior
+            animate={{ opacity: 0, y: -100, scale: 1.5 }} 
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
             className="fixed pointer-events-none"
             style={{ 
-              left: heart.x - 12, // Centraliza perfeitamente no ponteiro (metade de 24px)
+              left: heart.x - 12, 
               top: heart.y - 12, 
               zIndex: 9999 
             }}
