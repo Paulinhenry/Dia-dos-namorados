@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, X, Calendar, ChevronDown } from 'lucide-react';
 
 // === IMPORTAÇÃO DAS SUAS FOTOS ===
-// 1. A sua foto principal que já está na pasta assets:
 import fotoHero from './assets/hero.png';
 import foto1 from './assets/foto1.jpeg';
 import foto2 from './assets/foto2.jpeg';
@@ -12,12 +11,7 @@ import foto4 from './assets/foto4.jpeg';
 import foto5 from './assets/foto5.jpeg';
 import foto6 from './assets/foto6.jpeg';
 import foto7 from './assets/foto7.jpeg';
-
-// 2. Para as fotos da galeria, remova as barras "//" e coloque o nome correto dos seus ficheiros:
-// import foto1 from './assets/sua-foto-1.jpg';
-// import foto2 from './assets/sua-foto-2.jpg';
-// import foto3 from './assets/sua-foto-3.jpg';
-// import foto4 from './assets/sua-foto-4.jpg';
+import foto8 from './assets/foto8.jpeg';
 
 // --- CONFIGURAÇÃO DE ESTILOS ---
 const styles = {
@@ -33,7 +27,6 @@ export default function ParaCamyla() {
 
   // --- TRANSIÇÃO AUTOMÁTICA DA TELA INICIAL ---
   useEffect(() => {
-    // 4000 significa 4 segundos. Se quiser que demore mais tempo a fechar, mude para 5000 (5 seg), etc.
     const splashTimer = setTimeout(() => {
       setShowSplash(false);
     }, 4000); 
@@ -136,7 +129,7 @@ export default function ParaCamyla() {
         {showSplash && (
           <motion.div 
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1.5 } }} // Aumentei um pouco a duração para desvanecer mais suavemente
+            exit={{ opacity: 0, transition: { duration: 1.5 } }}
             className="fixed inset-0 bg-[#03061a] z-50 flex flex-col items-center justify-center text-center p-8 overflow-hidden"
           >
             <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -207,7 +200,7 @@ export default function ParaCamyla() {
               className="w-[280px] md:w-[340px] h-[380px] md:h-[440px] rounded-2xl overflow-hidden relative shadow-[0_0_60px_rgba(121,134,203,0.3),_0_30px_60px_rgba(0,0,0,0.6)] border border-[#7986cb]/20"
             >
               <img 
-                src={fotoHero} 
+                src={foto8} 
                 alt="Nós os dois" 
                 className="w-full h-full object-cover object-top"
               />
@@ -229,19 +222,37 @@ export default function ParaCamyla() {
           {/* Âncoragem para o scroll suave */}
           <div id="nossa-historia"></div>
 
-          {/* Seção de Citação / Poema */}
+          {/* Seção de Citação / Poema - 100% CORRIGIDA */}
           <section className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center bg-gradient-to-b from-transparent via-[#1a237e]/10 to-transparent">
             <span className="text-[10px] tracking-[0.3em] uppercase text-[#7986cb] mb-6">Nossos Sentimentos</span>
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}
-              className="max-w-2xl relative px-4"
+              className="flex flex-col items-center"
             >
-              <span className="absolute -top-16 -left-4 text-9xl text-[#7986cb]/10 pointer-events-none select-none" style={styles.fontPlayfair}>“</span>
-              <p className="text-xl md:text-3xl italic leading-relaxed text-slate-200" style={styles.fontPlayfair}>
-                No vasto céu do meu mundo, você é a estrela mais brilhante, aquela que guia os meus passos e dá sentido ao meu caminhar.
-              </p>
-              <span className="absolute -top-16 -left-4 text-9xl text-[#7986cb]/10 pointer-events-none select-none" style={styles.fontPlayfair}>”</span>
-              <p className="text-xs text-[#ffd54f] tracking-[0.2em] uppercase mt-6 font-semibold">— O nosso amor</p>
+              <div className="relative max-w-2xl px-8 md:px-12 py-6">
+                {/* Aspas de Abertura (Garantido por inline-style) */}
+                <span 
+                  className="absolute pointer-events-none select-none" 
+                  style={{ ...styles.fontPlayfair, top: '-20px', left: '-10px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
+                >
+                  “
+                </span>
+                
+                <p className="text-xl md:text-3xl italic leading-relaxed text-slate-200 relative z-10" style={styles.fontPlayfair}>
+                  No vasto céu do meu mundo, você é a estrela mais brilhante, aquela que guia os meus passos e dá sentido ao meu caminhar.
+                </p>
+                
+                {/* Aspas de Fechamento (Garantido por inline-style) */}
+                <span 
+                  className="absolute pointer-events-none select-none" 
+                  style={{ ...styles.fontPlayfair, bottom: '-50px', right: '75px', fontSize: '120px', color: 'rgba(121, 134, 203, 0.15)', lineHeight: 1 }}
+                >
+                  ”
+                </span>
+              </div>
+              
+              {/* Assinatura */}
+              <p className="text-xs text-[#ffd54f] tracking-[0.2em] uppercase mt-8 font-semibold relative z-10">— O nosso amor</p>
             </motion.div>
           </section>
 
@@ -252,12 +263,16 @@ export default function ParaCamyla() {
               <p className="text-xs md:text-sm text-[#7986cb] tracking-wider">Momentos guardados para sempre no lado esquerdo do peito.</p>
             </div>
 
+            {/* As suas 7 fotos */}
             <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
               {[
-                { id: 1, tall: true, url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=500", label: "O teu sorriso" },
-                { id: 2, tall: false, url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=500", label: "Nós" },
-                { id: 3, tall: false, url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=500", label: "Cumplicidade" },
-                { id: 4, tall: true, url: "https://images.unsplash.com/photo-1494774157365-9e04c6720e47?q=80&w=500", label: "Amo-te" },
+                { id: 1, tall: true, url: foto1, label: "Nosso início" },
+                { id: 2, tall: false, url: foto2, label: "Nós" },
+                { id: 3, tall: false, url: foto3, label: "Cumplicidade" },
+                { id: 4, tall: true, url: foto4, label: "Amo-te" },
+                { id: 5, tall: false, url: foto5, label: "Alegria" },
+                { id: 6, tall: true, url: foto6, label: "Paz" },
+                { id: 7, tall: false, url: foto7, label: "Nosso amor" },
               ].map((photo) => (
                 <motion.div
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
